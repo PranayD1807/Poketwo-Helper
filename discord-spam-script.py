@@ -111,10 +111,13 @@ messages = [
     "🕰️ Celebi messing with my schedule"
 ]
     
-for i in range(200):
-    msg = random.choice(messages)
-    payload = {"content": msg}
-    r = requests.post(discord_url, headers=discord_headers, json=payload)
-    print("Messages Sent:", i + 1, "->", msg)
-    time.sleep(random.choice([8, 10, 15, 20, 4, 5, 7, 9]))
+def spam_discord(number_of_messages):     
+    for i in range(number_of_messages):
+        msg = random.choice(messages)
+        payload = {"content": msg}
+        r = requests.post(discord_url, headers=discord_headers, json=payload)
+        print("Messages Sent:", i + 1, "->", msg)
+        time.sleep(random.randrange(3, 8))
+
+spam_discord(200)
 
