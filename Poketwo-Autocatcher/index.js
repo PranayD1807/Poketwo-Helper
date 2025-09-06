@@ -174,6 +174,9 @@ function updateStats(messages = 0, captures = 0) {
 
 //-------------------------READY HANDLER+SPAMMER-----------------------//
 
+let messagesCount = 0;
+let captureCount = 0;
+
 client.on("ready", () => {
     console.log("https://github.com/AkshatOP/Poketwo-Autocatcher");
     console.log(`Acount: ${client.user.username} is ONLINE, `);
@@ -188,14 +191,14 @@ client.on("ready", () => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    let messagesCount = 0;
-
     function spam() {
         const randomMessage =
             messages[Math.floor(Math.random() * messages.length)];
         channel.send(randomMessage);
         messagesCount++;
-        console.log(`Msg. ${messagesCount} -> ${randomMessage}`);
+        console.log(
+            `🕒 ${new Date().toLocaleTimeString()} | 💬 Messages: ${messagesCount}`
+        );
         updateStats(1, 0); // Update stats with 1 message sent
         const randomInterval = getRandomInterval(1500, 5000); // Random interval for spam between 1 second and 5 seconds
         setTimeout(spam, randomInterval);
@@ -400,15 +403,20 @@ client.on("messageCreate", async (message) => {
                             const delay =
                                 Math.floor(Math.random() * 6 + 5) * 1000; //interval from 5-10seconds
                             console.log(
-                                "A Pokemon Spawned, Catching in " +
+                                "🐸 A Pokemon Spawned, Catching in " +
                                     delay / 1000 +
-                                    "seconds"
+                                    " seconds"
                             );
+
                             setTimeout(async () => {
                                 message.channel
                                     .send(`<@716390085896962058> c ${name}`)
                                     .then((a) => {
+                                        captureCount++;
                                         updateStats(0, 1); // Update stats with 1 capture
+                                        console.log(
+                                            `🕒 ${new Date().toLocaleTimeString()} | 🐸 Pokemons: ${captureCount}`
+                                        );
                                     })
                                     .catch((error) => {
                                         console.error(error);
