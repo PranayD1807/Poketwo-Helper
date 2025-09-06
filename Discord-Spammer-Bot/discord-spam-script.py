@@ -116,8 +116,13 @@ def spam_discord(number_of_messages):
         msg = random.choice(messages)
         payload = {"content": msg}
         r = requests.post(discord_url, headers=discord_headers, json=payload)
-        print("Messages Sent:", i + 1, "->", msg)
+        if r.status_code == 200:
+            print(f"{i+1}. {msg}")
+        else:
+            print("Failed to send message:", r.status_code, r.text)
+            break
         time.sleep(random.randrange(3, 8))
 
 spam_discord(200)
 
+# Run using caffeinate python ./discord-spam-script.py
