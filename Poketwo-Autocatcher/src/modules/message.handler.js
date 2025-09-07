@@ -22,7 +22,7 @@ export const handleIncomingMessage = async (client, message) => {
     ) {
         // Captcha Detected Stop Spamming
         message.channel.send(
-            "⚠️ Captcha Detected! ⚠️"
+            "⚠️ Captcha Detected! Resolve captch manually and then run `$autobot spam start` to resume spamming."
         );
 
         stopSpamming(client);

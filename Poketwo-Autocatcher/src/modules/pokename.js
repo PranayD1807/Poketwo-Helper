@@ -11,7 +11,7 @@ export const handlePokeNameMessage = async (client, message) => {
 
         if (message.embeds?.length > 0 && message.embeds[0].image) {
             await message.channel.send(
-                "⚠️ Pokename TextNaming is Disabled! Please type `-toggle textnaming` to enable it."
+                "⚠️ Pokename textnaming is disabled! Please type `-toggle textnaming` to enable it."
             );
             return;
         }
