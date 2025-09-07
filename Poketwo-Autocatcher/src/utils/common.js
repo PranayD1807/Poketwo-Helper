@@ -14,6 +14,13 @@ export const checkSpawnsRemaining = (string) => {
     }
 }
 
-export const getRandomInterval = (min, max)  =>{
+export const getRandomInterval = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export const extractPokemonName = (text) => {
+    // Matches '##' + emojis (optional), then captures as many characters (including spaces)
+    // as possible until it encounters the start of an emoji (<:), bracket 【, or end of string
+    const match = text.match(/##\s+(?:<:.+?:\d+>\s+)*([\p{L}\s\-']+?)(?=\s*<:|【|$)/u);
+    return match ? match[1].trim() : null;
 }
