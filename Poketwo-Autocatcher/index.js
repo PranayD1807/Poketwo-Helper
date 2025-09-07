@@ -1,127 +1,16 @@
-/*
-@Developer: 🔥⃤•AK_ØPᵈᵉᵛ✓#6326 / akshatop
-Name: Poketwo-Autocatcher
-Version: V1.3.2
-Description: bot to help users with catching pokemons
-@Supported: poketwo/pokemon
-STAR THIS REPO(https://github.com/AkshatOP/Poketwo-Autocatcher) FOR IT TO WORK
-*/
-const Discord = require("discord.js-selfbot-v13");
+import Discord from "discord.js-selfbot-v13";
+import express from "express";
+import pokeHint from 'pokehint';
+const { solveHint, checkRarity } = pokeHint;
+import { ocrSpace } from "ocr-space-api-wrapper";
+import config from "./config.json" with { type: "json" };
+import { startSpamming } from "./src/modules/spam.js";
+import { findOutput } from "./src/utils/common.js";
+let isSleeping = false;
+
 const client = new Discord.Client({
     checkUpdate: false,
 });
-const express = require("express");
-const { solveHint, checkRarity } = require("pokehint");
-const { ocrSpace } = require("ocr-space-api-wrapper");
-const fs = require("fs");
-const path = require("path");
-const config = require("./config.json");
-const json = require("./namefix.json");
-const allowedChannels = []; // Add your allowed channel IDs to this array or leave it like [] if you want to it to catch from all channels
-let isSleeping = false;
-const messages = [
-    "🚨 beep beep Pikachu crossing the road",
-    "🔍 finding a Bulbasaur in tall grass",
-    "😱 oh no Team Rocket stole my snacks",
-    "🐉 Charizard just burned my homework",
-    "📡 scanning for Jigglypuff karaoke nearby",
-    "🥷 sneaky Meowth is plotting something",
-    "⚡ Pikachu overcharged my phone battery",
-    "🛑 Officer Jenny just gave me a ticket",
-    "🍕 Snorlax ate my midnight pizza order",
-    "🚀 Team Rocket blasting off in my backyard",
-    "🎣 Magikarp flopping on the sidewalk",
-    "🔥 Charmander heating up my coffee",
-    "🥽 Squirtle squad invading the swimming pool",
-    "🌙 Umbreon haunting the dark alley",
-    "🎤 Jigglypuff singing everyone to sleep",
-    "🚗 beep beep Psyduck driving a taxi",
-    "🏃 Machop chasing me down the street",
-    "📦 Ditto disguised as my Amazon package",
-    "☁️ Lugia flapping strong winds today",
-    "🍎 Chikorita stealing apples from my bag",
-    "🚧 Geodude blocking the walking path",
-    "🎮 Pikachu hacked my Nintendo Switch",
-    "📞 Porygon answering spam calls for me",
-    "🥵 Charmander made my AC stop working",
-    "🚨 beep beep Detective Pikachu arriving",
-    "🦴 Cubone crying in the corner",
-    "🍦 Vanillite melting in the sun",
-    "🌊 Gyarados flooding my backyard",
-    "🚴 Ash late to bike practice again",
-    "🍌 Mankey threw bananas at me",
-    "🦆 Psyduck doesn't understand anything",
-    "💤 Snorlax blocking the railway crossing",
-    "👕 Eevee stole my hoodie again",
-    "🏖️ Lapras offering free beach rides",
-    "📸 Pikachu photobombing selfies",
-    "🤖 Magnemite charging my headphones",
-    "🥕 Buneary stealing my carrots",
-    "🚦 Pokéball stuck at a red light",
-    "🎁 Meowth gifting empty boxes",
-    "⛑️ Nurse Joy treating my fainted hopes",
-    "🌋 Moltres lighting fireworks tonight",
-    "🥊 Hitmonlee kicking traffic cones",
-    "🍩 Jigglypuff stole my last donut",
-    "🍿 Pikachu binge-watching anime",
-    "🦎 Charmander sunbathing by the pool",
-    "🛶 Totodile rowing upstream too fast",
-    "🔔 Beedrill ringing morning alarms",
-    "🎇 Pikachu overloading the city grid",
-    "🕵 Detective Pikachu solving cookie thefts",
-    "📜 Abra rewinding my homework notes",
-    "🧢 Ash lost his hat again",
-    "🚓 Officer Jenny tailing Meowth",
-    "🐢 Turtwig hiding in the garden",
-    "🍹 Slowpoke mixing tropical shakes",
-    "🎳 Geodude smashed the bowling pins",
-    "🛎️ Jigglypuff singing hotel lullabies",
-    "📌 Ditto pretending to be my pillow",
-    "⚔️ Lucario sparring in the backyard",
-    "🚕 Pikachu calling a ride share",
-    "🦉 Noctowl staring through my window",
-    "💡 Pikachu powered the whole house",
-    "🍀 Shaymin hiding in flower pots",
-    "🍒 Cherubi dangling on my window frame",
-    "🚁 Pidgeot delivering air mail",
-    "☕ Espurr serving weird coffee vibes",
-    "🪙 Meowth flipping coins all day",
-    "🎢 Gengar riding the rollercoaster",
-    "🎭 Ditto failed cosplay attempt",
-    "🚰 Squirtle broke the water pipes",
-    "🥶 Articuno freezing traffic lights",
-    "🛼 Pikachu roller-skating in the mall",
-    "🥞 Snorlax crushing pancake stack",
-    "🏰 Dragonite delivering royal mail",
-    "🥽 Psyduck lifeguarding the beach",
-    "🩺 Nurse Joy reviving my phone battery",
-    "🍫 Munchlax ate all the candy bars",
-    "🦑 Inkay spilling ink on homework",
-    "🎱 Pokéball mistaken for pool ball",
-    "🛎️ Jigglypuff pressing random doorbells",
-    "🚦 Pikachu controlling traffic signals",
-    "🛋️ Snorlax stealing seats on the bus",
-    "🌪️ Tornadus giving bad hair days",
-    "🧊 Regice hiding in my freezer",
-    "🎯 Ash missing Pokéball throws again",
-    "🍵 Bulbasaur brewing herbal tea",
-    "🍋 Pikachu shocked my lemonade",
-    "🏀 Geodude dunked the basketball",
-    "🧹 Rotom cleaning my Roomba",
-    "😴 Slowking daydreaming in meetings",
-    "🤹 Mime Jr juggling Pokéballs",
-    "🧃 Charmander boiled my juice box",
-    "📀 Porygon glitching in VHS tapes",
-    "🍉 Tropius growing fruit snacks",
-    "🪄 Alakazam bending spoons again",
-    "🐝 Beedrill swarming the playground",
-    "🛋️ Wobbuffet crashed my couch",
-    "🎂 Pikachu blew my birthday candles",
-    "🚄 Electrode racing on subway rails",
-    "🕰️ Celebi messing with my schedule",
-];
-
-//------------------------- KEEP-ALIVE--------------------------------//
 
 const app = express();
 if (Number(process.version.slice(1).split(".")[0]) < 8)
@@ -133,77 +22,14 @@ app.get("/", (req, res) => {
         success: "true",
     });
 });
+
 app.listen(process.env.PORT || 3000);
 
-//--------------------------------------------------------------//
-
-//-------------------------SOME EXTRA FUNCTIONS----------------------------//
-
-function findOutput(input) {
-    if (json.hasOwnProperty(input)) {
-        return json[input];
-    } else {
-        return input;
-    }
-}
-
-function checkSpawnsRemaining(string) {
-    const match = string.match(/Spawns Remaining: (\d+)/);
-    if (match) {
-        const spawnsRemaining = parseInt(match[1]);
-        console.log(spawnsRemaining);
-    }
-}
-
-function updateStats(messages = 0, captures = 0) {
-    const filePath = path.join(__dirname, "stats.json");
-    let stats = { messages: 0, captures: 0 };
-
-    if (fs.existsSync(filePath)) {
-        stats = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    }
-
-    stats.messages += messages;
-    stats.captures += captures;
-
-    fs.writeFileSync(filePath, JSON.stringify(stats, null, 2));
-    return stats;
-}
-
-//--------------------------------------------------------------------------//
-
-//-------------------------READY HANDLER+SPAMMER-----------------------//
-
-let messagesCount = 0;
 let captureCount = 0;
 
 client.on("ready", () => {
-    console.log("https://github.com/AkshatOP/Poketwo-Autocatcher");
-    console.log(`Acount: ${client.user.username} is ONLINE, `);
-    console.log(
-        "Note: When your using Incense then make sure it occurs in a separate channel where hint bots like pokename/sierra aren't enabled to send message there!"
-    );
-    console.log("Use $help to know about commands");
-
-    const channel = client.channels.cache.get(config.spamChannelID);
-
-    function getRandomInterval(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function spam() {
-        const randomMessage =
-            messages[Math.floor(Math.random() * messages.length)];
-        channel.send(randomMessage);
-        messagesCount++;
-        console.log(
-            `🕒 ${new Date().toLocaleTimeString()} | 💬 Messages: ${messagesCount}`
-        );
-        updateStats(1, 0); // Update stats with 1 message sent
-        const randomInterval = getRandomInterval(1500, 5000); // Random interval for spam between 1 second and 5 seconds
-        setTimeout(spam, randomInterval);
-    }
-    spam();
+    console.log(`Logged in as ${client.user.tag}!`);
+    startSpamming(client);
 });
 
 //------------------------------------------------------------//
@@ -365,6 +191,7 @@ client.on("messageCreate", async (message) => {
             }
         } else {
             const Pokebots = ["696161886734909481", "874910942490677270"]; //sierra ,pokename
+            const allowedChannels = config.catchChannelIds; 
             if (
                 allowedChannels.length > 0 &&
                 !allowedChannels.includes(message.channel.id)
