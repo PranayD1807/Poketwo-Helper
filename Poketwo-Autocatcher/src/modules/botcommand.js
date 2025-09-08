@@ -1,3 +1,4 @@
+import { disableAutoCatcher, enableAutoCatcher } from "./capturePokemon.js";
 import { startSpamming, stopSpamming } from "./spam.js";
 
 const helpText = `
@@ -5,6 +6,8 @@ const helpText = `
 
 > \`$autobot spam start\`: Start spamming messages  
 > \`$autobot spam stop\`: Stop spamming messages  
+> \`$autobot catch start\`: Start Auto Catcher 
+> \`$autobot catch stop\`: Stop Auto Catcher  
 > \`$autobot say [text]\`: Make the autobot say something  
 > \`$autobot click [text|emoji]\`: Click a button on the replied message  
 > \`$autobot help\`: Show this help message  
@@ -22,6 +25,14 @@ async function cmdSpamStart(client, message) {
 
 async function cmdSpamStop(client, message) {
     stopSpamming(client, message);
+}
+
+async function cmdCaptureStart(message) {
+    enableAutoCatcher(message);
+}
+
+async function cmdCaptureStop(message) {
+    disableAutoCatcher(message);
 }
 
 async function cmdSay(message) {
@@ -79,6 +90,8 @@ export const handleBotCommand = async (client, message) => {
     if (message.content === "$autobot help") return cmdHelp(message);
     if (message.content === "$autobot spam start") return cmdSpamStart(client, message);
     if (message.content === "$autobot spam stop") return cmdSpamStop(client, message);
+    if (message.content === "$autobot catch start") return cmdCaptureStart(message);
+    if (message.content === "$autobot catch stop") return cmdCaptureStop(message);
     if (message.content.startsWith("$autobot say")) return cmdSay(message);
     if (message.content.startsWith("$autobot click")) return cmdClick(message);
 };

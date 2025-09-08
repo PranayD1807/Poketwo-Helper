@@ -5,6 +5,7 @@ import pokeHint from 'pokehint';
 const { checkRarity } = pokeHint;
 
 let captureCount = 0;
+let isCapturing = true;
 
 async function logCapture(client, message, collected, pokeName) {
     try {
@@ -33,6 +34,8 @@ async function logCapture(client, message, collected, pokeName) {
 
 export const capturePokemon = async (client, message, pokeName) => {
 
+    if(!isCapturing) return;
+
     try {
         await message.channel.send(`<@716390085896962058> c ${pokeName}`);
 
@@ -58,5 +61,27 @@ export const capturePokemon = async (client, message, pokeName) => {
         console.error("Send catch command error:", error);
         const errorChannel = client.channels.cache.get(config.errorChannelID);
         if (errorChannel) await errorChannel.send(`Error sending catch command: ${error.message}`);
+    }
+}
+
+export const enableAutoCatcher = async (message) => {
+    if (!isCapturing) {
+        isCapturing = true;
+        await message.channel.send("🟢 Starting Auto Capture!");
+        console.log("🟢 Starting Auto Capture!");
+    } else {
+        await message.channel.send("⚠️ Auto Capture is already enabled.");
+        console.log("⚠️ Auto Capture is already enabled.");
+    }
+}
+
+export const disableAutoCatcher = async (message) => {
+    if (isCapturing) {
+        isCapturing = false;
+        await message.channel.send("🔴 Stopping Auto Capture!");
+        console.log("🔴 Stopping Auto Capture!");
+    } else {
+        await message.channel.send("⚠️ Auto Capture is already enabled.");
+        console.log("⚠️ Auto Capture is already enabled.");
     }
 }
