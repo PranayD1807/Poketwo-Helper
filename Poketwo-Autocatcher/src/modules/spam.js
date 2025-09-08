@@ -124,25 +124,30 @@ const spam = (channel) => {
     }
 };
 
-export const startSpamming = (client) => {
+export const startSpamming = (client, commandSentFromChannel) => {
     if(!config.spamChannelID){
         console.log("⚠️ Please set the spamChannelID in config.json to enable spamming.");
         return;
     }
+    if(timeoutID){
+        commandSentFromChannel.channel.send("⚠️ Spam is already running.");
+        console.log("⚠️ Spam is already running.");
+        return;
+    }
     const channel = client.channels.cache.get(config.spamChannelID);
-    channel.send("🛑 Stopping spam...");
+    commandSentFromChannel.channel.send("🟢 Starting spam!");
+    console.log("🟢 Starting spam!");
     spam(channel);
 };
 
-export const stopSpamming = (client) => {
-    const channel = client.channels.cache.get(config.spamChannelID);
+export const stopSpamming = (client, commandSentFromChannel) => {
     if (timeoutID) {
-        channel.send("🛑 Stopping spam...");
-        console.log("🛑 Stopping spam...");
+        commandSentFromChannel.channel.send("🔴 Stopping spam!");
+        console.log("🔴 Stopping spam!");
         clearTimeout(timeoutID);
         timeoutID = null;
     } else {
-        channel.send("⚠️ Spam is not running.");
+        commandSentFromChannel.channel.send("⚠️ Spam is not running.");
         console.log("⚠️ Spam is not running.");
     }
 };
