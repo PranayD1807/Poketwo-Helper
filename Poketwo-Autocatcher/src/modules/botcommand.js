@@ -2,6 +2,7 @@ import { disableAutoCatcher, enableAutoCatcher } from "./capturePokemon.js";
 import { startSpamming, stopSpamming } from "./spam.js";
 import config from "../../config.json" with { type: "json" };
 import fs from "fs/promises";
+import { toggleIncenseMode } from "./pokename.js";
 
 const helpText = `
 ### 🤖 Autobot Commands
@@ -12,6 +13,7 @@ const helpText = `
 > \`$autobot catch stop\`: Stop Auto Catcher  
 > \`$autobot say [text]\`: Make the autobot say something  
 > \`$autobot click [text|emoji]\`: Click a button on the replied message  
+> \`$autobot incense toggle\`: Toggle Incense Mode (makes the bot catch pokemons faster)
 > \`$autobot tag list\`: List all tags
 > \`$autobot tag rarities\`: List all recognized rarities in Pokétwo
 > \`$autobot tag add [tag]\`: Add a tag to the tag list (used in Auto Catcher), Notifies when a pokemon with the tag in its name or rarity appears.
@@ -161,4 +163,5 @@ export const handleBotCommand = async (client, message) => {
     if (message.content.startsWith("$autobot tag remove")) return cmdRemoveTag(message);
     if (message.content === "$autobot tag list") return listTags(message);
     if (message.content === "$autobot tag rarities") return listRarities(message);
+    if (message.content === "$autobot incense toggle") return toggleIncenseMode(message);
 };

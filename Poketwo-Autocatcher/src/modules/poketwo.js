@@ -10,18 +10,6 @@ export const handlePoketwoMessage = async (client, message) => {
             return;
         }
 
-        // Check for Spawns Remaining and Ask Hint
-        if (message?.embeds[0]?.footer?.text.includes("Spawns Remaining")) {
-            await message.channel.send(`<@716390085896962058> h`);
-            if (
-                message.embeds[0]?.footer?.text ===
-                "Incense: Active.\nSpawns Remaining: 0."
-            ) {
-                message.channel.send(`<@716390085896962058> buy incense`);
-            }
-            return;
-        }
-
         // Hint Given, Try to Catch
         if (message.content.includes("The pokémon is")) {
             const pokemon = solveHint(message);

@@ -20,7 +20,7 @@ async function logCapture(client, message, collected, pokeName) {
             rarity = "Not Found in Database";
         }
         const logChannel = client.channels.cache.get(config.logChannelID);
-        if (logChannel) {
+        if (logChannel && pokeName) {
             const addTag = config.tags.some(tag => pokeName.toLowerCase().includes(tag.toLowerCase())) || config.tags.some(tag => (rarity && rarity.toLowerCase().includes(tag.toLowerCase())));
             await logChannel.send(
                 `${addTag ? `Congratulation <@${config.OwnerID}>!` : ""} [${message.guild.name}/#${message.channel.name}] **__${pokeName}__** • Rarity: **${rarity}**`
