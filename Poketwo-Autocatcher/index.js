@@ -3,6 +3,7 @@ import express from "express";
 import config from "./config.json" with { type: "json" };
 import chalk from "chalk";
 import { handleIncomingMessage } from "./src/modules/message.handler.js";
+import { loadDiscordUserInfo } from "./src/modules/user.js";
 
 const client = new Discord.Client({
     checkUpdate: false,
@@ -54,7 +55,12 @@ process.on("multipleResolves", (type, promise, reason) => {
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    console.log("Type $autobot help for help menu");
+    console.log("Type $mb help for help menu");
+    loadDiscordUserInfo({
+        id: client.user.id,
+        displayName: client.user.displayName,
+        tag: client.user.tag,
+    })
 });
 
 client.on("messageCreate", async (message) => {

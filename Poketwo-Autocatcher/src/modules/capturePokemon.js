@@ -23,8 +23,10 @@ async function logCapture(client, message, collected, pokeName) {
         if (logChannel && pokeName) {
             const addTag = config.tags.some(tag => pokeName.toLowerCase().includes(tag.toLowerCase())) || config.tags.some(tag => (rarity && rarity.toLowerCase().includes(tag.toLowerCase())));
             await logChannel.send(
-                `${addTag ? `Congratulation <@${config.OwnerID}>!` : ""} [${message.guild.name}/#${message.channel.name}] **__${pokeName}__** • Rarity: **${rarity}**`
+                `${addTag ? `🎉 Congratulations <@${config.OwnerID}>! ` : ""}` +
+                `A **${rarity}** Pokémon, **${pokeName}**, was captured in **${message.guild.name}** (#${message.channel.name})!`
             );
+
         }
     } catch (error) {
         console.error("Log Capture Error:", error);
@@ -35,7 +37,7 @@ async function logCapture(client, message, collected, pokeName) {
 
 export const capturePokemon = async (client, message, pokeName) => {
 
-    if(!isCapturing) return;
+    if (!isCapturing) return;
 
     try {
         await message.channel.send(`<@716390085896962058> c ${pokeName}`);

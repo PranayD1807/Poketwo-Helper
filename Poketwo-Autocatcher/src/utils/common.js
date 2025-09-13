@@ -24,3 +24,8 @@ export const extractPokemonName = (text) => {
     const match = text.match(/##\s+(?:<:.+?:\d+>\s+)*([\p{L}\s\-']+?)(?=\s*<:|【|$)/u);
     return match ? match[1].trim() : null;
 }
+
+export const extractChannelId = (str) => {
+    const match = str.match(/<#(\d+)>/);
+    return match ? match[1] : null;
+}

@@ -8,7 +8,7 @@ export const handleIncomingMessage = async (client, message) => {
 
     // Handler Bot Commands
     if (
-        message.content.startsWith("$autobot") &&
+        message.content.startsWith("$mb") &&
         message.author.id === config.OwnerID
     ) {
         handleBotCommand(client, message);
