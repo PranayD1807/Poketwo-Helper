@@ -41,7 +41,7 @@ When a pokemon is caught, if its name or rarity matches any of the tags, the bot
 If a config is not set, the bot will not function properly.
 If catch channels are not set, the bot will attempt to catch in all channels.
 
-> \'$mb config show\`: Show current configs
+> \`$mb config show\`: Show current configs
 > \`$mb config spam [channelID]\`: Set the spam channel  
 > \`$mb config log [channelID]\`: Set the log channel  
 > \`$mb config error [channelID]\`: Set the error log channel

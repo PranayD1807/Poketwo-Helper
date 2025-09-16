@@ -1,6 +1,6 @@
 import pokeHint from 'pokehint';
 const { solveHint } = pokeHint;
-import { capturePokemon } from "./capturePokemon.js";
+import { capturePokemon, getCaptureStatus } from "./capturePokemon.js";
 import { getDiscordUserInfo } from './user.js';
 import fs from "fs/promises";
 import config from "../../config.json" with { type: "json" };
@@ -11,14 +11,15 @@ async function saveConfig() {
 
 export const handlePoketwoMessage = async (client, message) => {
     try {
+        const isCapturing = getCaptureStatus()
         // Wrong Pokemon, Ask Hint
-        if (message.content === "That is the wrong pokémon!") {
+        if (message.content === "That is the wrong pokémon!" && isCapturing) {
             message.channel.send(`<@716390085896962058> h`);
             return;
         }
 
         // Hint Given, Try to Catch
-        if (message.content.includes("The pokémon is")) {
+        if (message.content.includes("The pokémon is") && isCapturing) {
             const pokemon = solveHint(message);
             capturePokemon(client, message, pokemon[0]);
             return;

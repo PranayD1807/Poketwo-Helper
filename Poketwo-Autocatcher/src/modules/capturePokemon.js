@@ -88,3 +88,7 @@ export const disableAutoCatcher = async (message) => {
         console.log("⚠️ Auto Capture is already enabled.");
     }
 }
+
+export const getCaptureStatus = () => {
+    return isCapturing;
+}
