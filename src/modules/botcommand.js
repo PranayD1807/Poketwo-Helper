@@ -6,7 +6,7 @@ import { getBotConfig, updateBotConfig } from "../utils/config.js";
 
 const helpText = `
 **🤖 Commands**
-
+> \`bots hi\`: Bot replies Hello! 
 > \`{prefix} spam start\`: Start spamming messages  
 > \`{prefix} spam stop\`: Stop spamming messages  
 > \`{prefix} catch start\`: Start Auto Catcher  

@@ -1,7 +1,7 @@
 {
-  "name": "Poketwo-Autocatcher",
-  "version": "1.3.0",
-  "description": "bot to help users with catching pokemons",
+  "name": "Poketwo-Helper",
+  "version": "1.0.0",
+  "description": "bot to help users with poketwo",
   "main": "index.js",
   "type": "module",
   "scripts": {
