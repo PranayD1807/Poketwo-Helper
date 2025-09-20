@@ -4,10 +4,7 @@ import config from "./config.json" with { type: "json" };
 import chalk from "chalk";
 import { handleIncomingMessage } from "./src/modules/message.handler.js";
 import { loadDiscordUserInfo } from "./src/modules/user.js";
-
-const client = new Discord.Client({
-    checkUpdate: false,
-});
+import { getBots, updateBotConfig } from "./src/utils/config.js";
 
 const app = express();
 
@@ -53,18 +50,33 @@ process.on("multipleResolves", (type, promise, reason) => {
     console.log("-".repeat(60));
 });
 
-client.on("ready", () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-    console.log("Type $mb help for help menu");
-    loadDiscordUserInfo({
-        id: client.user.id,
-        displayName: client.user.displayName,
-        tag: client.user.tag,
-    })
-});
+const initialiseBots = () => {
+    const bots = getBots();
+    bots.forEach((bot) => {
+        if (bot.TOKEN && bot.botId && bot.prefix && bot.OwnerID) {
+            const client = new Discord.Client({
+                checkUpdate: false,
+            });
 
-client.on("messageCreate", async (message) => {
-    await handleIncomingMessage(client, message);
-});
+            client.on("ready", () => {
+                console.log(`Logged in as ${client.user.tag}!`);
+                console.log(`Type ${bot.prefix} help for help menu`);
+                loadDiscordUserInfo({
+                    id: client.user.id,
+                    displayName: client.user.displayName,
+                    tag: client.user.tag,
+                })
+            });
 
-client.login(config.TOKEN); //use process.env.TOKEN if you are using it in repl.it
+            client.on("messageCreate", async (message) => {
+                await handleIncomingMessage(client, message);
+            });
+
+            client.login(bot.TOKEN);
+        } else {
+            console.log("Please check TOKEN, botId, prefix and OwnerID in the config.")
+        }
+    });
+}
+
+initialiseBots()

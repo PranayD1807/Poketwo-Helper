@@ -1,15 +1,17 @@
-import config from "../../config.json" with { type: "json" };
 import { stopSpamming } from "./spam.js";
 import { handleBotCommand } from "./botcommand.js";
 import { handlePoketwoMessage } from "./poketwo.js";
 import { handlePokeNameMessage } from "./pokename.js";
+import { getBotConfig } from "../utils/config.js";
 
 export const handleIncomingMessage = async (client, message) => {
 
+    const botConfig = getBotConfig(client.user.id)
     // Handler Bot Commands
     if (
-        message.content.startsWith("$mb") &&
-        message.author.id === config.OwnerID
+        botConfig &&
+        message.content.startsWith(botConfig.prefix) &&
+        message.author.id === botConfig.OwnerID
     ) {
         handleBotCommand(client, message);
         return;
