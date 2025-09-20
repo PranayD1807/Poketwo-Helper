@@ -51,7 +51,7 @@ If "text naming" is enabled, the bot may fail to recognize Pokémon names, causi
 - Requires **Node.js 20+**.  
 - Clone the repo and install dependencies:
   ```
-  git clone https://github.com/yourusername/Poketwo-Helper.git
+  git clone https://github.com/PranayD1807/Poketwo-Helper
   cd Poketwo-Helper
   npm install
   ```
@@ -102,7 +102,7 @@ All other settings are optional and can be configured at runtime via commands.
 
 - Start the bot:
   ```
-  node .
+  node . 
   ```
 - Use prefix commands in Discord to configure and control the bot on the fly.
 
