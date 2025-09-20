@@ -14,7 +14,7 @@ let discordUsers = {};
  */
 export const loadDiscordUserInfo = (userInfo) => {
     discordUsers[userInfo.id] = userInfo;
-    console.log(`✅ Bot Info Loaded: Id: ${userInfo.id}, Tag: ${userInfo.tag}, Name: ${userInfo.displayName}`);
+    console.log(`⏰ ${new Date().toLocaleTimeString()} | ✅ Bot Info Loaded: Id: ${userInfo.id}, Tag: ${userInfo.tag}, Name: ${userInfo.displayName}`);
 };
 
 /**

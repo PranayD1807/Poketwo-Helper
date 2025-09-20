@@ -336,7 +336,7 @@ async function cmdClick(message, botConfig) {
     try {
         await targetMessage.clickButton(button.customId);
     } catch (err) {
-        console.log(`⚠️ Failed to click ${buttonText} button.`);
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | ⚠️ Failed to click ${buttonText} button.`);
         await message.channel.send(`⚠️ Failed to click ${buttonText} button.`);
     }
 }

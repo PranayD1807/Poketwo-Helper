@@ -10,7 +10,7 @@ export const checkSpawnsRemaining = (string) => {
     const match = string.match(/Spawns Remaining: (\d+)/);
     if (match) {
         const spawnsRemaining = parseInt(match[1]);
-        console.log(spawnsRemaining);
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | spawnsRemaining = ${spawnsRemaining}`);
     }
 }
 

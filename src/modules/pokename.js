@@ -10,7 +10,7 @@ export const toggleIncenseMode = async (message) => {
     await updateBotConfig(botConfig.botId, { incenseMode: newMode });
 
     await message.channel.send(`🌸 Incense Mode is now ${newMode ? "enabled" : "disabled"}.`);
-    console.log(`🌸 Incense Mode is now ${newMode ? "enabled" : "disabled"}.`);
+    console.log(`⏰ ${new Date().toLocaleTimeString()} | 🌸 Incense Mode is now ${newMode ? "enabled" : "disabled"}.`);
 };
 
 export const handlePokeNameMessage = async (client, message) => {
@@ -47,7 +47,7 @@ export const handlePokeNameMessage = async (client, message) => {
             delay = (Math.floor(Math.random() * 6) + 5) * 1000;
         }
 
-        console.log(`🐸 A Pokemon Spawned, Try Catching in ${delay / 1000} seconds`);
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | 🐸 A Pokemon Spawned, Try Catching in ${delay / 1000} seconds`);
 
         setTimeout(async () => {
             await capturePokemon(client, message, pokeName);

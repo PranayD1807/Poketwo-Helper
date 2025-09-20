@@ -60,8 +60,8 @@ const initialiseBots = () => {
             });
 
             client.on("ready", () => {
-                console.log(`Logged in as ${client.user.tag}!`);
-                console.log(`Type ${bot.prefix} help for help menu`);
+                console.log(`⏰ ${new Date().toLocaleTimeString()} | Logged in as ${client.user.tag}!`);
+                console.log(`⏰ ${new Date().toLocaleTimeString()} | Type ${bot.prefix} help for help menu`);
                 loadDiscordUserInfo({
                     id: client.user.id,
                     displayName: client.user.displayName,
@@ -78,7 +78,7 @@ const initialiseBots = () => {
 
             client.login(bot.TOKEN);
         } else {
-            console.log("Please check TOKEN, botId, prefix and OwnerID in the config.")
+            console.log(`⏰ ${new Date().toLocaleTimeString()} | Please check TOKEN, botId, prefix and OwnerID in the config.`)
         }
     });
 }

@@ -1,7 +1,7 @@
-import Discord from "discord.js-selfbot-v13";
 import { updateStats } from "./stats.js";
 import pokeHint from 'pokehint';
 import { getBotConfig, updateBotConfig } from "../utils/config.js";
+import { getDiscordUserInfo } from "./user.js";
 const { checkRarity } = pokeHint;
 
 let captureCount = 0;
@@ -29,7 +29,9 @@ export const logSuccessfulCapture = async (client, message) => {
     try {
         captureCount++;
         updateStats(0, 1);
-        console.log(`🕒 ${new Date().toLocaleTimeString()} | 🐸 Pokemons: ${captureCount}`);
+        const botInfo = getDiscordUserInfo(client.user.id);
+        
+        console.log(`🕒 ${new Date().toLocaleTimeString()} | 🐸 Pokemons: ${captureCount} | Captured by: ${botInfo.displayName}`);
 
         const captureChannelID = botConfig.captureChannelID;
         const captureChannel = captureChannelID ? client.channels.cache.get(captureChannelID) : null;
@@ -61,7 +63,7 @@ export const logSuccessfulCapture = async (client, message) => {
         try {
             rarity = await checkRarity(pokeName);
         } catch (error) {
-            console.log(`Error checking rarity for ${pokeName}:`, error);
+            console.log(`⏰ ${new Date().toLocaleTimeString()} | Error checking rarity for ${pokeName}:`, error);
         }
 
         // Normalize tags to lowercase for case-insensitive comparison
@@ -117,10 +119,10 @@ export const enableAutoCatcher = async (message) => {
     if (!getIsCapturing(botConfig)) {
         await setIsCapturing(botConfig.botId, true);
         await message.channel.send("🟢 Starting Auto Capture!");
-        console.log("🟢 Starting Auto Capture!");
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | 🟢 Starting Auto Capture!`);
     } else {
         await message.channel.send("⚠️ Auto Capture is already enabled.");
-        console.log("⚠️ Auto Capture is already enabled.");
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | ⚠️ Auto Capture is already enabled.`);
     }
 };
 
@@ -131,10 +133,10 @@ export const disableAutoCatcher = async (message) => {
     if (getIsCapturing(botConfig)) {
         await setIsCapturing(botConfig.botId, false);
         await message.channel.send("🔴 Stopping Auto Capture!");
-        console.log("🔴 Stopping Auto Capture!");
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | 🔴 Stopping Auto Capture!`);
     } else {
         await message.channel.send("⚠️ Auto Capture is already disabled.");
-        console.log("⚠️ Auto Capture is already disabled.");
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | ⚠️ Auto Capture is already disabled.`);
     }
 };
 

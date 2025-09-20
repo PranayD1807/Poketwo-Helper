@@ -1,6 +1,7 @@
 import { updateStats } from "./stats.js";
 import { getRandomInterval } from "../utils/common.js";
 import { getBotConfig, updateBotConfig } from "../utils/config.js";
+import { getDiscordUserInfo } from "./user.js";
 
 const messages = [
     "🚨 beep beep Pikachu crossing the road",
@@ -104,18 +105,28 @@ const messages = [
     "🕰️ Celebi messing with my schedule",
 ];
 
-let messagesCount = 0;
-let timeoutID = null;
+let messageCounts = {}
 
 const spam = (channel, botId) => {
     try {
+        const botConfig = getBotConfig(botId);
+        if(!botConfig.isSpamming){
+            return;
+        }
+
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
         channel.send(randomMessage);
-        messagesCount++;
-        console.log(`🕒 ${new Date().toLocaleTimeString()} | 💬 Messages: ${messagesCount}`);
+
+        if(!messageCounts[botId]){
+            messageCounts[botId] = 0;
+        }
+
+        messageCounts[botId]++;
+        const botInfo = getDiscordUserInfo(botId);
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | 📝 Messages: ${messageCounts[botId]} | Sent by: ${botInfo.displayName}`);
         updateStats(1, 0); // Update stats with 1 message sent
         const randomInterval = getRandomInterval(1500, 5000); // random interval between 1.5s to 5s
-        timeoutID = setTimeout(() => spam(channel, botId), randomInterval);
+        setTimeout(() => spam(channel, botId), randomInterval);
     } catch (error) {
         console.error("💥 Error in spam function:", error);
     }
@@ -125,33 +136,33 @@ export const startSpamming = async (client, command, force) => {
     const botConfig = getBotConfig(client.user.id);
     if (!botConfig) {
         if(command) command.channel.send("⚠️ Bot config not found.");
-        console.log("⚠️ Bot config not found.")
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | ⚠️ Bot config not found.`)
         return;
     }
 
     if (!botConfig.spamChannelID) {
-        console.log("⚠️ Please set spamChannelID in your bot's config to enable spamming.");
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | ⚠️ Please set spamChannelID in your bot's config to enable spamming.`);
         if(command) command.channel.send("⚠️ Please set the spam channel in your config to enable spamming.");
         return;
     }
 
     if (botConfig.isSpamming && !force) {
         if(command) command.channel.send("⚠️ Spam is already running.");
-        console.log("⚠️ Spam is already running.");
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | ⚠️ Spam is already running.`);
         return;
     }
 
     const channel = client.channels.cache.get(botConfig.spamChannelID);
     if (!channel) {
         if(command) command.channel.send("⚠️ Spam channel not found or bot cannot access it.");
-        console.log("⚠️ Spam channel not found or inaccessible.");
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | ⚠️ Spam channel not found or inaccessible.`);
         return;
     }
 
     await updateBotConfig(botConfig.botId, { isSpamming: true });
 
     if(command) command.channel.send("🟢 Starting spam!");
-    console.log("🟢 Starting spam!");
+    console.log(`⏰ ${new Date().toLocaleTimeString()} | 🟢 Starting spam!`);
 
     spam(channel, botConfig.botId);
 };
@@ -165,17 +176,12 @@ export const stopSpamming = async (client, command) => {
 
     if (!botConfig.isSpamming) {
         if(command) command.channel.send("⚠️ Spam is not running.");
-        console.log("⚠️ Spam is not running.");
+        console.log(`⏰ ${new Date().toLocaleTimeString()} | ⚠️ Spam is not running.`);
         return;
-    }
-
-    if (timeoutID) {
-        clearTimeout(timeoutID);
-        timeoutID = null;
     }
 
     await updateBotConfig(botConfig.botId, { isSpamming: false });
 
     if(command) command.channel.send("🔴 Stopping spam!");
-    console.log("🔴 Stopping spam!");
+    console.log(`⏰ ${new Date().toLocaleTimeString()} | 🔴 Stopping spam!`);
 };
