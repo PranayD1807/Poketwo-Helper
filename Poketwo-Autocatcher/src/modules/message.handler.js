@@ -17,6 +17,15 @@ export const handleIncomingMessage = async (client, message) => {
         return;
     }
 
+    if(
+        botConfig &&
+        message.content === "$bots hi" &&
+        message.author.id === botConfig.OwnerID
+    ) {
+        message.channel.send(`Hi <@${botConfig.OwnerID}>! Type \`${botConfig.prefix} help\` for help menu`)
+        return;
+    }
+
     // Handle Captcha Detection
     if (
         message.content.includes("Please tell us") &&

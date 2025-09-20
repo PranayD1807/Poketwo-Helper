@@ -5,7 +5,7 @@ import { extractChannelId } from "../utils/common.js";
 import { getBotConfig, updateBotConfig } from "../utils/config.js";
 
 const helpText = `
-**🤖 Mellow Bot Commands**
+**🤖 Commands**
 
 > \`{prefix} spam start\`: Start spamming messages  
 > \`{prefix} spam stop\`: Stop spamming messages  

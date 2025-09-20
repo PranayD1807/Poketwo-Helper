@@ -5,6 +5,7 @@ import chalk from "chalk";
 import { handleIncomingMessage } from "./src/modules/message.handler.js";
 import { loadDiscordUserInfo } from "./src/modules/user.js";
 import { getBots, updateBotConfig } from "./src/utils/config.js";
+import { startSpamming } from "./src/modules/spam.js";
 
 const app = express();
 
@@ -66,6 +67,9 @@ const initialiseBots = () => {
                     displayName: client.user.displayName,
                     tag: client.user.tag,
                 })
+                if(bot.isSpamming){
+                    startSpamming(client, null, true)   
+                }
             });
 
             client.on("messageCreate", async (message) => {

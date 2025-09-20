@@ -121,49 +121,50 @@ const spam = (channel, botId) => {
     }
 };
 
-export const startSpamming = async (client, commandSentFromChannel) => {
+export const startSpamming = async (client, command, force) => {
     const botConfig = getBotConfig(client.user.id);
     if (!botConfig) {
-        commandSentFromChannel.channel.send("⚠️ Bot config not found.");
+        if(command) command.channel.send("⚠️ Bot config not found.");
+        console.log("⚠️ Bot config not found.")
         return;
     }
 
     if (!botConfig.spamChannelID) {
         console.log("⚠️ Please set spamChannelID in your bot's config to enable spamming.");
-        commandSentFromChannel.channel.send("⚠️ Please set the spam channel in your config to enable spamming.");
+        if(command) command.channel.send("⚠️ Please set the spam channel in your config to enable spamming.");
         return;
     }
 
-    if (botConfig.isSpamming) {
-        commandSentFromChannel.channel.send("⚠️ Spam is already running.");
+    if (botConfig.isSpamming && !force) {
+        if(command) command.channel.send("⚠️ Spam is already running.");
         console.log("⚠️ Spam is already running.");
         return;
     }
 
     const channel = client.channels.cache.get(botConfig.spamChannelID);
     if (!channel) {
-        commandSentFromChannel.channel.send("⚠️ Spam channel not found or bot cannot access it.");
+        if(command) command.channel.send("⚠️ Spam channel not found or bot cannot access it.");
         console.log("⚠️ Spam channel not found or inaccessible.");
         return;
     }
 
     await updateBotConfig(botConfig.botId, { isSpamming: true });
 
-    commandSentFromChannel.channel.send("🟢 Starting spam!");
+    if(command) command.channel.send("🟢 Starting spam!");
     console.log("🟢 Starting spam!");
 
     spam(channel, botConfig.botId);
 };
 
-export const stopSpamming = async (client, commandSentFromChannel) => {
+export const stopSpamming = async (client, command) => {
     const botConfig = getBotConfig(client.user.id);
     if (!botConfig) {
-        commandSentFromChannel.channel.send("⚠️ Bot config not found.");
+        if(command) command.channel.send("⚠️ Bot config not found.");
         return;
     }
 
     if (!botConfig.isSpamming) {
-        commandSentFromChannel.channel.send("⚠️ Spam is not running.");
+        if(command) command.channel.send("⚠️ Spam is not running.");
         console.log("⚠️ Spam is not running.");
         return;
     }
@@ -175,6 +176,6 @@ export const stopSpamming = async (client, commandSentFromChannel) => {
 
     await updateBotConfig(botConfig.botId, { isSpamming: false });
 
-    commandSentFromChannel.channel.send("🔴 Stopping spam!");
+    if(command) command.channel.send("🔴 Stopping spam!");
     console.log("🔴 Stopping spam!");
 };
