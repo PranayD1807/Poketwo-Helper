@@ -23,44 +23,77 @@ const setIsCapturing = async (botId, state) => {
     await updateBotConfig(botId, { isCapturing: state });
 };
 
-async function logCapture(client, message, collected, pokeName) {
+export const logSuccessfulCapture = async (client, message) => {
     const botConfig = getBotConfig(client.user.id);
     if (!botConfig) return;
-
     try {
         captureCount++;
         updateStats(0, 1);
         console.log(`🕒 ${new Date().toLocaleTimeString()} | 🐸 Pokemons: ${captureCount}`);
 
-        let rarity;
+        const captureChannelID = botConfig.captureChannelID;
+        const captureChannel = captureChannelID ? client.channels.cache.get(captureChannelID) : null;
+        if (!captureChannel) return;
+
+        const content = message.content;
+
+        const regex = /Level (\d+) ([\w\s]+)(<:\w+:\d+>)? \(([\d.]+)%\)/i;
+        const match = content.match(regex);
+        if (!match) return;
+
+        const level = match[1];
+        const pokeName = match[2].trim();
+        const emojiTag = match[3] || "";
+        const iv = match[4];
+
+        const gender = (() => {
+            if (!emojiTag) return "unknown";
+            if (emojiTag.includes(":male:")) return "Male";
+            if (emojiTag.includes(":female:")) return "Female";
+            if (emojiTag.includes(":unknown:")) return "Unknown";
+            return "unknown";
+        })();
+
+        const isShiny = content.includes("These colors seem unusual...");
+        const shinyText = isShiny ? "✨ Shiny " : "";
+
+        let rarity = "Unknown";
         try {
             rarity = await checkRarity(pokeName);
-        } catch {
-            rarity = "Not Found in Database";
+        } catch (error) {
+            console.log(`Error checking rarity for ${pokeName}:`, error);
         }
 
-        const logChannelID = botConfig.logChannelID;
-        const logChannel = logChannelID ? client.channels.cache.get(logChannelID) : null;
-        if (logChannel && pokeName) {
-            const tags = Array.isArray(botConfig.tags) ? botConfig.tags : [];
-            const addTag =
-                tags.some(tag => pokeName.toLowerCase().includes(tag.toLowerCase())) ||
-                (rarity && tags.some(tag => rarity.toLowerCase().includes(tag.toLowerCase())));
+        // Normalize tags to lowercase for case-insensitive comparison
+        const tagsLower = (Array.isArray(botConfig.tags) ? botConfig.tags : []).map(t => t.toLowerCase());
 
-            const ownerId = botConfig.OwnerID ?? "";
+        const addTag =
+            tagsLower.some(tag => pokeName.toLowerCase().includes(tag)) ||
+            (rarity && tagsLower.some(tag => rarity.toLowerCase().includes(tag))) ||
+            (isShiny && tagsLower.includes("shiny"));
 
-            await logChannel.send(
-                `${addTag ? `🎉 Congratulations <@${ownerId}>! ` : ""}` +
-                `A **${rarity}** Pokémon, **${pokeName}**, was captured in **${message.guild?.name ?? "Unknown Server"}** (#${message.channel?.name ?? "Unknown Channel"})!`
-            );
-        }
-    } catch (error) {
-        console.error("Log Capture Error:", error);
+        const ownerId = botConfig.OwnerID ?? "";
+
+        const logMessage =
+            `${addTag ? `🎉 Congratulations <@${ownerId}>!\n` : ""}` +
+            `🎯 **Pokemon Caught**!\n` +
+            `- 🏷️ Name: ${shinyText}${pokeName}\n` +
+            `- 🔥 Rarity: ${rarity}\n` +
+            `${isShiny ? `- ✨ Shiny: It's a shiny!\n` : ""}` +
+            `- 🎚️ Level: ${level}\n` +
+            `- ⚧ Gender: ${gender}\n` +
+            `- 📊 IV: ${iv}%\n` +
+            `- 🌐 Server: ${message.guild?.name ?? "Unknown"}\n` +
+            `- 💬 Channel: ${message.channel ? `<#${message.channel.id}>` : "Unknown"}`;
+
+        await captureChannel.send(logMessage);
+    } catch (e) {
+        console.error("Log Capture Error:", e);
         const errorChannelID = botConfig.errorChannelID;
         const errorChannel = errorChannelID ? client.channels.cache.get(errorChannelID) : null;
         if (errorChannel) errorChannel.send(`Error logging capture: ${error.message}`);
     }
-}
+};
 
 export const capturePokemon = async (client, message, pokeName) => {
     const botConfig = getBotConfig(client.user.id);
@@ -69,25 +102,6 @@ export const capturePokemon = async (client, message, pokeName) => {
 
     try {
         await message.channel.send(`<@716390085896962058> c ${pokeName}`);
-
-        const filter = (msg) => msg.author.id === "716390085896962058";
-        const collector = new Discord.MessageCollector(message.channel, filter, {
-            max: 1,
-            time: 13000,
-        });
-
-        collector.on("collect", async (collected) => {
-            if (collected.content.includes("Congratulations")) {
-                await logCapture(client, message, collected, pokeName);
-                collector.stop();
-            }
-        });
-
-        collector.on("end", (collected, reason) => {
-            if (reason !== "user") {
-                console.log("Collector ended without catching message.");
-            }
-        });
     } catch (error) {
         console.error("Send catch command error:", error);
         const errorChannelID = botConfig.errorChannelID;

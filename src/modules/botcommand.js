@@ -39,6 +39,7 @@ If catch channels are not set, the bot will attempt to catch in all channels.
 > \`{prefix} config spam [channelID]\`: Set the spam channel  
 > \`{prefix} config log [channelID]\`: Set the log channel  
 > \`{prefix} config error [channelID]\`: Set the error log channel
+> \`{prefix} config capture [channelID]\`: Set the capture logs channel  
 > \`{prefix} config catch add [channelID]\`: Add a channel to auto catch list  
 > \`{prefix} config catch remove [channelID]\`: Remove a channel from auto catch list  
 
@@ -199,6 +200,7 @@ async function cmdConfigShow(message, botConfig) {
     const response = `### ⚙️ Current Configs:
 - Spam Channel: <#${botConfig.spamChannelID || "Not set"}>
 - Log Channel: <#${botConfig.logChannelID || "Not set"}>
+- Capture Logs Channel: <#${botConfig.captureChannelID || "Not Set"}>
 - Error Channel: <#${botConfig.errorChannelID || "Not set"}>
 - Auto Catch Channels: ${botConfig.catchChannelIds.length > 0
             ? botConfig.catchChannelIds.map(id => `<#${id}>`).join(", ")
@@ -218,6 +220,19 @@ async function cmdConfigSetSpam(message, botConfig) {
 
     await updateBotConfig(botConfig.botId, { spamChannelID: channelID });
     await message.channel.send(`✅ Spam channel set to <#${channelID}>.`);
+}
+
+async function cmdConfigSetCapture(message, botConfig) {
+    const arg = message.content.slice(`${botConfig.prefix} config capture`.length).trim();
+    const channelID = extractChannelId(arg);
+
+    if (!channelID) {
+        await message.channel.send("❌ Please mention a valid channel (e.g., <#1234567890>).");
+        return;
+    }
+
+    await updateBotConfig(botConfig.botId, { captureChannelID: channelID });
+    await message.channel.send(`✅ Capture Logs channel set to <#${channelID}>.`);
 }
 
 async function cmdConfigSetLog(message, botConfig) {
@@ -355,6 +370,7 @@ export const handleBotCommand = async (client, message) => {
     if (content === `${prefix} max list`) return cmdMaxList(message, botConfig);
 
     if (content === `${prefix} config show`) return cmdConfigShow(message, botConfig);
+    if (content.startsWith(`${prefix} config capture`)) return cmdConfigSetCapture(message, botConfig);
     if (content.startsWith(`${prefix} config spam`)) return cmdConfigSetSpam(message, botConfig);
     if (content.startsWith(`${prefix} config log`)) return cmdConfigSetLog(message, botConfig);
     if (content.startsWith(`${prefix} config error`)) return cmdConfigSetError(message, botConfig);

@@ -1,6 +1,6 @@
 import pokeHint from 'pokehint';
 const { solveHint } = pokeHint;
-import { capturePokemon, getCaptureStatus } from "./capturePokemon.js";
+import { capturePokemon, getCaptureStatus, logSuccessfulCapture } from "./capturePokemon.js";
 import { getDiscordUserInfo } from './user.js';
 import { getBotConfig, updateBotConfig } from "../utils/config.js";
 
@@ -80,6 +80,12 @@ export const handlePoketwoMessage = async (client, message) => {
                 console.log(`✅ ${new Date().toLocaleTimeString()} | Selected next pokemon to max: ${nextToPokemon}`);
                 await message.channel.send(`<@716390085896962058> s ${nextToPokemon}`);
             }
+            return;
+        }
+
+        // Log Capture
+        if(message.content?.includes(`Congratulations <@${botConfig.botId}>! You caught a Level`)){
+            await logSuccessfulCapture(client, message)
             return;
         }
     } catch (error) {
