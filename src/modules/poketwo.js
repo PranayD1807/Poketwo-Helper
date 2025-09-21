@@ -23,6 +23,10 @@ export const handlePoketwoMessage = async (client, message) => {
 
         // Hint Given, Try to Catch
         if (message.content.includes("The pokémon is") && isCapturing) {
+            const allowedChannels = Array.isArray(botConfig.catchChannelIds) ? botConfig.catchChannelIds : [];
+            // If catch channels are set and this channel not included, ignore
+            if (allowedChannels.length > 0 && !allowedChannels.includes(message.channel.id)) return;
+
             const pokemon = solveHint(message);
             capturePokemon(client, message, pokemon[0]);
             return;

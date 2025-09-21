@@ -4,7 +4,7 @@ import { getBotConfig, updateBotConfig } from "../utils/config.js";
 import { getDiscordUserInfo } from "./user.js";
 const { checkRarity } = pokeHint;
 
-let captureCount = 0;
+let captureCounts = {}
 
 /**
  * Helper to read isCapturing from bot config (default true)
@@ -27,11 +27,15 @@ export const logSuccessfulCapture = async (client, message) => {
     const botConfig = getBotConfig(client.user.id);
     if (!botConfig) return;
     try {
-        captureCount++;
+        if(!captureCounts[botConfig.botId]){
+            captureCounts[botConfig.botId] = 0;
+        }
+        captureCounts[botConfig.botId]++;
+
         updateStats(0, 1);
         const botInfo = getDiscordUserInfo(client.user.id);
         
-        console.log(`🕒 ${new Date().toLocaleTimeString()} | 🐸 Pokemons: ${captureCount} | Captured by: ${botInfo.displayName}`);
+        console.log(`🕒 ${new Date().toLocaleTimeString()} | 🐸 Pokemons: ${captureCounts[botConfig.botId]} | Captured by: ${botInfo.displayName}`);
 
         const captureChannelID = botConfig.captureChannelID;
         const captureChannel = captureChannelID ? client.channels.cache.get(captureChannelID) : null;
