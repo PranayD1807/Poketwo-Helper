@@ -1,8 +1,7 @@
-import { stopSpamming } from "./spam.js";
 import { handleBotCommand } from "./botcommand.js";
 import { handlePoketwoMessage } from "./poketwo.js";
 import { handlePokeNameMessage } from "./pokename.js";
-import { getBotConfig } from "../utils/config.js";
+import { getBotConfig, updateBotConfig } from "../utils/config.js";
 
 export const handleIncomingMessage = async (client, message) => {
 
@@ -31,12 +30,20 @@ export const handleIncomingMessage = async (client, message) => {
         message.content.includes("Please tell us") &&
         message.author.id === "716390085896962058"
     ) {
+        const allowedChannels = Array.isArray(botConfig.catchChannelIds) ? botConfig.catchChannelIds : [];
+        // If catch channels are set and this channel not included, ignore
+        if (allowedChannels.length > 0 && !allowedChannels.includes(message.channel.id)) return;
+
         // Captcha Detected Stop Spamming
         message.channel.send(
-            "⚠️ Captcha Detected! Resolve captch manually and then run `$autobot spam start` to resume spamming."
+            `⚠️ Captcha Detected! Resolve captch manually and then run \`${botConfig.prefix} spam start\` to resume spamming and \`${botConfig.prefix} catch start\` to resume capturing.`
         );
 
-        stopSpamming(client);
+        await updateBotConfig(botConfig.botId, {
+            isSpamming: false,
+            isCapturing: false,
+        })
+
         return;
     }
 

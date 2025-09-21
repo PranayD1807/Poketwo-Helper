@@ -13,6 +13,10 @@ export const handlePoketwoMessage = async (client, message) => {
 
         // Wrong Pokemon, Ask Hint
         if (message.content === "That is the wrong pokémon!" && isCapturing) {
+            const allowedChannels = Array.isArray(botConfig.catchChannelIds) ? botConfig.catchChannelIds : [];
+            // If catch channels are set and this channel not included, ignore
+            if (allowedChannels.length > 0 && !allowedChannels.includes(message.channel.id)) return;
+
             message.channel.send(`<@716390085896962058> h`);
             return;
         }
@@ -84,7 +88,7 @@ export const handlePoketwoMessage = async (client, message) => {
         }
 
         // Log Capture
-        if(message.content?.includes(`Congratulations <@${botConfig.botId}>! You caught a Level`)){
+        if (message.content?.includes(`Congratulations <@${botConfig.botId}>! You caught a Level`)) {
             await logSuccessfulCapture(client, message)
             return;
         }
